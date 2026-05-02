@@ -43,12 +43,12 @@ Before starting the implementation, a step will be added to clean and standardiz
 
 Example of additions in the event schema: 
 
-<img src="/Users/sanvishukla/Desktop/Proposal/image.png" width="60%"/>
+<img src="/image.png" width="60%"/>
 
 
 1. Reduce API calls in geocoding: Currently, the generate_events_json.py script attempts to geocode events missing "lat/lng" fields during every execution. As the event data grows, this leads to repeated calls to the [Nominatim](https://nominatim.org/release-docs/latest/api/Overview/) API, risking timeouts and usage policy violations. When an event is added via PR, the CI will geocode it once and then write the coordinates back to the source events.yaml. The Python script will be updated to modify the events.yaml file directly upon successful geocoding. A GitHub Action will then commit these changes back to the branch. This will ensure each event is geocoded exactly once, reducing API dependency to almost zero for existing data.
 
-![Flowchart 1 on Reducing API calls in geocoding](/Users/sanvishukla/Desktop/Proposal/F1.png)
+![Flowchart 1 on Reducing API calls in geocoding](/F1.png)
 
 
 2. Coordinate Validation: The current geocode_location logic will compare the resulting country code from Nominatim with the region field in  events.yaml. This prevents "Coordinate Drift". For example, geocoding a city named "London" in Canada when the event is in the UK. Lighthouse CI  (@lhci/cli) will be integrated in .github/workflows/ci.yaml to enforce a minimum score of 90 for Performance and Accessibility.
@@ -63,7 +63,7 @@ Example of additions in the event schema:
 
    Risk & Mitigation: Recurring meetups/events can share titles but are distinct events. The comparison will use a composite score example: 0.6 * title_ratio + 0.4 * date_proximity, where "date_proximity" will be 1 if within 7 days and 0 beyond 30 days. This reduces false positives for legitimate recurring events.
 
-   ![Flowchart 2](/Users/sanvishukla/Desktop/Proposal/mermaid-diagram.png)
+   ![Flowchart 2](/mermaid-diagram.png)
 
 **Phase 2: Distribution & Automation Outputs**
 
@@ -77,7 +77,7 @@ Example of additions in the event schema:
 
 7. Add UI Event Submission: A "Submit Event" form will be created that will open a pre-filled GitHub Issue. This will ensure the events will be reviewed before they can go live.
 
-<img src="/Users/sanvishukla/Desktop/Proposal/img3.png" width="60%"/>
+<img src="/img3.png" width="60%"/>
 
 8. One-Click URL Import: A "Quick Add" field will be added where users paste a Meetup or Eventbrite URL. A serverless proxy via GitHub Actions will scrape Open Graph metadata to pre-populate the contribution form, and the maintainers can merge those events later on.
 
@@ -87,14 +87,14 @@ Example of additions in the event schema:
 
 10. Time-Slider Map Visualisation: A new <TimeSlider /> component positioned as a fixed overlay on the map will be introduced. This will filter mapEvents based on a range slider, showing the number of events as they move from the current week to 6 months out.
 
-<img src="/Users/sanvishukla/Desktop/Proposal/img2.png" width="60%"/>
+<img src="/img2.png" width="60%"/>
 
 11. "in X days" feature: Currently, EventCard.jsx uses a standard toLocaleDateString. Another function will be added to the file. The native Intl.RelativeTimeFormat API will be used to compute "in 3 days" or "yesterday". For events beyond a 30-day threshold, the UI will automatically fall back to the absolute date.
 
     Risk & Mitigation: Edge cases with timezone offsets between the user's browser and the event's fixed UTC date. All internal calculations will be standardised to the event's local time string before computing offsets, ensuring "Today" is accurate globally. 
 
 
-<img src="/Users/sanvishukla/Desktop/Proposal/img1.png" width="70%"/>
+<img src="/img1.png" width="70%"/>
 
 
 **Phase 5: Offline & App Experience**
